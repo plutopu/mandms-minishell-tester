@@ -1,0 +1,28 @@
+echo hi
+echo $PATH
+echo $fake
+echo $?
+< in.txt cat | cowsay
+echo $?
+sleep 1
+sleep 1 | wc -w | cat -e
+export
+echo $?
+hgkjhkd
+echo $?
+||
+echo $?
+> > <  > ><
+echo $?
+hello '
+echo $?
+export hi
+echo $?
+export hi=2000
+unset PATH
+export
+echo $ $PATH $$ $USER
+
+
+
+exit

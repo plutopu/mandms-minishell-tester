@@ -1,0 +1,90 @@
+/bin/echo ""$?""
+$?"42"
+''$?''"42"
+'"$USER"'
+"'$USER'"
+""'$USER'""
+'"'$USER'"'
+"''$USER''"
+"'"'$USER'"'"
+'"'"$USER"'"'
+$"HOME"$USER
+$"HOM"E$USER
+"exit_code ->$? user ->$USER home -> $HOME"
+$"HOME"
+$"42$"
+"$ "
+hi >./outfiles/outfile01 | /bin/echo bye
+<123 <456 hi | /bin/echo 42
+'$='
+'$ '
+"$?"
+'$?'
+"'$?'"
+\$USER
+\\$USER
+\\\$USER
+\\\\$USER
+\\\\\$USER
+\\\\\\\\\$USER
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\$USER \$PATH \\$PWD
+"cat lol.c | cat > lol.c"
+"cat lol.c '|' cat > lol.c"
+'$USER' "$USER" "text  ' text"
+$USER =intergalaktikus miaf*szomez
+-n"-n" bonjour
+"'$USER'"
+" '$USER' "
+text"$USER"
+text"'$USER'" ' $USER '
+"text"   "$USER"    "$USER"
+'              $USER          '
+''''''''''$USER''''''''''
+""""""""$USER""""""""
+'""""""""$USER""""""""'
+""'""""""$USER""""""'""
+""""""""'$USER'""""""""
+"""""""'"$USER"'"""""""
+""""""'""$USER""'""""""
+""'""'""""$USER""""'""'""
+'""'""'""""$USER""""'""'""'
+$USER'$USER'text oui oui     oui  oui $USER oui      $USER ''
+"text" "text$USER" ... "$USER"
+
+/bin/echo
+''
+""
+'' ""
+/bin/echo
+test1
+'test1'
+"/bin/echo hallo"
+/bin/echo"1"
+"test1 test2"
+"test1  test2" test3
+" test1 test2 " 'test3 '
+test1		test2
+$USER$TESTNOTFOUND$HOME$
+$USER$TESTNOTFOUND$HOME$WTF$PWD
+-n test1
+-n "test1 test2"
+-n "test1 test2" test3
+-n " test1 test2 " 'test3 '
+-n test1		test2
+test1 -n
+"test1 -n"
+-n -n test1
+-n -n -n -n -n test1
+"  -nn "
+"-n test1 -n test2"
+"test1 -n test2"
+~42
+-n -n -nasd
+-n -n -n-nnnnn
+-n -nnnnnnn -n -nnn -nnnnn -n-n
+-n -nnnnnnn -n -nnn -nnnnn -n feel my pain
+-n -n -n-n
+"'totally logical'"
+'totally logical'
+''totally logical''
+""'totally logical'""

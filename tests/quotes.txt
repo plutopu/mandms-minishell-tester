@@ -1,0 +1,13 @@
+VALID INPUT:
+"test"
+'test'
+"'test'"
+'"test"'
+CONCATENATION:
+"test"'test'
+'test''test'
+'test'"test"
+MISMATCHED:
+"'test"'
+'"test'"
+"text'

@@ -1,0 +1,26 @@
+echo
+text
+“Hello”
+One two $THREE
+“Hello” ‘there’
+test 50
+echo ‘dont$LANGUAGEexpand’”< concat with previous” “do expand $fake and $HOME” < in.txt | ls >> out.txt
+export yay | export no | export | export hi
+export | echo 1
+echo hello | export
+#another test 90
+echo hello | export hi=1
+export 28=hello
+< in_a.txt wc | < in_b.txt wc
+< in_a.txt wc -l > outa.txt | < in_b.txt wc > outb.txt
+< in_a.txt wc -l > outa.txt | wc > outb.txt
+< in_a.txt wc -l > outa.txt | < outa.txt wc > outb.txt
+< 1.txt < 2.txt cat
+< 1.txt cat < 2.txt
+cat < in.txt in2.txt
+< in.txt cat > 1.txt > 2.txt
+> out.txt cat < in.txt
+< nonexistent.txt cat < normal.txt
+< nonexistent.txt cat | sleep 2 | wc -w
+> out1 < invalid cat > out2
+< fake cat < fake2 | < fake3

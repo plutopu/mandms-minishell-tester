@@ -1,0 +1,29 @@
+pwd
+cd tests
+cd ..
+echo hello world
+touch test1.txt
+cat test1.txt
+echo $fake
+echo $?
+< in.txt cat | cowsay
+echo $?
+sleep 1
+sleep 1 | wc -w | cat -e
+export
+echo $?
+hgkjhkd
+echo $?
+||
+echo $?
+> > <  > ><
+echo $?
+hello '
+echo $?
+export hi
+echo $?
+echo $USER
+echo '$USER'
+echo "$USER"
+export TESTVAR="Hello World 555555555"
+export

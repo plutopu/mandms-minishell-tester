@@ -181,7 +181,7 @@ then
 	for file in "${INPUTS[@]}"; do
 		out="${file%%.*}"
 		log="${LEAKSDIR}leaks_${out}.txt"
-		valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --trace-children=yes --suppressions=${TESTDIR}minishell.supp ./minishell 2> "$log"  1> /dev/null < "${TESTDIR}${file}"
+		valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --trace-children=yes --track-fds=yes --suppressions=${TESTDIR}minishell.supp ./minishell 2> "$log"  1> /dev/null < "${TESTDIR}${file}"
 		text=">> Checking leaks with ${file} "
 		textanim_s "$text"
 		ZEROLEAKS=$(grep -ic "lost: 0" "$log")

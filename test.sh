@@ -110,6 +110,20 @@ textanim_results()
 text=" A Tiny Little >> MiniShell << Tester  "
 textanim "$text"
 
+SHELLDIRS=$(find /home/$USER -type d -name "minishell")
+DIRCOUNT=$(find /home/$USER -type d -name "minishell" | wc -l)
+
+if [ "$DIRCOUNT" -gt 1 ]
+then
+	printf "${YE}multiple minishell directories found: $DIRCOUNT${RES}\n$SHELLDIRS\n"
+	printf "Proceed? [y/n]\n"
+	read ARG
+	if [ "$ARG" = "n" ]
+	then
+		exit 1
+	fi
+fi
+
 # NORMINETTE --------------------------------------------------------
 
 printf "${GR}>> Run Norminette checks? [y/n]${RES} "
@@ -210,9 +224,11 @@ then
 fi
 
 # CLEAN UP ----------------------------------------------------------
-
-printf "${GR}\nClean up? It will remove test logs, executables and object files. [y/n]${RES} "
+echo
+text=" CLEAN UP  "
+textanim "$text"
 tput cnorm
+printf "${GR}\nClean up? This will remove test logs, executables and object files. [y/n]${RES} "
 read ARG
 if [ "$ARG" = "y" ]; then
 	echo

@@ -15,6 +15,7 @@ BL=$(tput setaf 39)
 GR=$(tput setaf 70)
 OR=$(tput setaf 202)
 YE=$(tput setaf 214)
+RE=$(tput setaf 1)
 
 FIRE=$(tput bold setaf 202)
 FLAME=$(tput bold setaf 214)
@@ -110,8 +111,8 @@ textanim_results()
 text=" A Tiny Little >> MiniShell << Tester  "
 textanim "$text"
 
-# SHELLDIRS=($(find /home/$USER -type d -name "minishell"))
-SHELLDIRS=($(find /Users/$USER/Homework -type d -name "minishell"))
+SHELLDIRS=($(find /home/$USER -type d -name "minishell"))
+# SHELLDIRS=($(find /Users/$USER/Homework -type d -name "minishell"))
 DIRCOUNT=${#SHELLDIRS[@]}
 
 if [ "$DIRCOUNT" -gt 1 ]
@@ -130,7 +131,7 @@ else
 	DIR="${SHELLDIRS[0]}"
 fi
 
-printf "${BL}DEBUG chosen dir: $DIR${RES}\n"
+printf "${BL}${B}DEBUG chosen dir: $DIR${RES}\n"
 
 # NORMINETTE --------------------------------------------------------
 
@@ -183,6 +184,7 @@ then
 		text=">> Preparing minishell "
 		textanim_s "$text"
 		sleep 0.5
+		cd ${DIR}
 		make
 	fi
 	./minishell < ${TESTDIR}2test.txt
@@ -199,23 +201,33 @@ read ARG
 
 if [ "$ARG" = "y" ]
 then
+	printf "Readline leaks will be surpressed\n"
 	results=()
 	for file in "${INPUTS[@]}"; do
 		out="${file%%.*}"
 		log="${LEAKSDIR}leaks_${out}.txt"
-		valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --trace-children=yes --track-fds=yes --suppressions=${TESTDIR}minishell.supp ${DIR}./minishell 2> "$log"  1> /dev/null < "${TESTDIR}${file}"
+		valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --trace-children=yes --track-fds=yes --suppressions=${TESTDIR}minishell.supp ${DIR}/./minishell 2> "$log"  1> /dev/null < "${TESTDIR}${file}"
+		# valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --trace-children=yes --suppressions=${TESTDIR}minishell.supp ${DIR}/./minishell 2> "$log"  1> /dev/null < "${TESTDIR}${file}"
 		text=">> Checking leaks with ${file} "
 		textanim_s "$text"
-		ZEROLEAKS=$(grep -ic "lost: 0" "$log")
-		ZEROREACH=$(grep -ic "reachable: 0" "$log")
-#		ZEROFDOPEN=$(grep -ic "0 open ")
-		TOTALLEAKS=$(grep -ic "lost: " "$log")
-		TOTALREACH=$(grep -ic "reachable: " "$log")
-		if [[ "$TOTALLEAKS" - "$ZEROLEAKS" -eq 0 && "$TOTALREACH" - "$ZEROREACH" -eq 0 ]]
+		ZEROLEAKS=$(grep -ic " lost: 0 bytes in 0 blocks" "$log")
+		ZEROREACH=$(grep -ic "still reachable: 0 bytes in 0 blocks" "$log")
+		TOTALLEAKS=$(grep -ic " lost: .* bytes in .* blocks" "$log")
+		TOTALREACH=$(grep -ic "still reachable: .* bytes in .* blocks" "$log")
+#		if (( "$TOTALLEAKS" - "$ZEROLEAKS" -eq 0 && "$TOTALREACH" - "$ZEROREACH" -eq 0))
+		if (( (TOTALLEAKS - ZEROLEAKS) == 0 && (TOTALREACH - ZEROREACH) == 0 ))
 		then
 			results+=("$out: OK")
 		else
 			results+=("$out: LEAKS (see logs: $log)")
+			FDOPENCOUNT=$(grep -ic "Open file descriptor " "$log")
+			if [[ ! "$FDOPENCOUNT" -eq 0 ]]
+			then
+				printf "${RE}File descriptors: ${RES}\n"
+				grep "Open file descriptor " "$log"
+				grep "FILE DESCRIPTORS" "$log"
+
+			fi
 		fi
 	done
 	echo
@@ -223,16 +235,17 @@ then
 		filename="${r%%:*}"
 		result="${r#*: }"
 		textanim_results "$filename: "
-		if [[ "$result" == LEAKS* ]]; then
+		if [[ "$result" == LEAKS* ]]
+		then
 			printf "${YE}%s${RES}\n" "$result"
 		else
 			printf "${GR}%s${RES}\n" "$result"
 		fi
 	done
-
 fi
 
 # CLEAN UP ----------------------------------------------------------
+
 echo
 text=" CLEAN UP  "
 textanim "$text"
@@ -243,60 +256,8 @@ if [ "$ARG" = "y" ]; then
 	echo
 	echo rm -fr ${LEAKSDIR}*
 	rm -fr ${LEAKSDIR}*
+	cd ${DIR}
 	echo make fclean
 	make fclean
 fi
 
-
-	# LEAKS=$(grep -ic "0 bytes in 0" ${TESTDIR}leaks_output.txt)
-	# text="Leaks check: "
-	# if [ "$LEAKS" -eq 4 ]; then
-	# 	textanim_results "$text"
-	# 	printf "${GR}OK\n${RES}"
-	# 	printf "\nRemove test logs? [y/n]\n"
-	# 	read ARG
-	# 	if [ "$ARG" = "y"]; then
-	# 		rm ${TESTDIR}*
-	# 	fi
-	# else
-	# 	textanim_results "$text"
-	# 	printf "${FLAME}FAILED. See logs: ${TESTDIR}leaks ]\n${RES}"
-	# fi
-
-
-
-	# check norminette
-	# check built ins
-	# check executables
-	# check basic leaks
-
-
-
-# LOOPED ANIMATION
-# tput civis
-
-# cleanup() {
-#     tput cnorm
-#     tput sgr0
-# 	printf '\033'
-#     printf '\n'
-#     exit
-# }
-
-# # On script exit, show cursor again
-# trap cleanup INT TERM EXIT
-
-# while true; do
-#     for ((i=0; i<len; i++)); do
-#         line=""
-#         for ((j=0; j<len; j++)); do
-#             if (( j == i )); then
-#                 line+="${FLAME}${text:j:1}${RESET}"
-#             else
-#                 line+="${FIRE}${text:j:1}${RESET}"
-#             fi
-#         done
-#         printf "%s\r" "$line"
-#         sleep 0.15
-#     done
-# done

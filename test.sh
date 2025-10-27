@@ -25,7 +25,7 @@ B=$(tput bold)
 TESTDIR=$(pwd)/tests/
 LEAKSDIR=$(pwd)/tests/leaks/
 
-INPUTS=("sanity.txt" "pipesandredirs.txt" "quotes.txt" "weird_long.txt" "2test.txt" "input.txt")
+INPUTS=("sanity.txt" "pipesandredirs.txt" "quotes.txt" "weird_long.txt" "2test.txt" "input.txt" "redirs.txt")
 
 # if [ -z "$(ls -A tests/expected)" ]; then
 # 	./make_expected_output.sh
@@ -110,19 +110,27 @@ textanim_results()
 text=" A Tiny Little >> MiniShell << Tester  "
 textanim "$text"
 
-SHELLDIRS=$(find /home/$USER -type d -name "minishell")
-DIRCOUNT=$(find /home/$USER -type d -name "minishell" | wc -l)
+# SHELLDIRS=($(find /home/$USER -type d -name "minishell"))
+SHELLDIRS=($(find /Users/$USER/Homework -type d -name "minishell"))
+DIRCOUNT=${#SHELLDIRS[@]}
 
 if [ "$DIRCOUNT" -gt 1 ]
 then
-	printf "${YE}multiple minishell directories found: $DIRCOUNT${RES}\n$SHELLDIRS\n"
-	printf "Proceed? [y/n]\n"
-	read ARG
-	if [ "$ARG" = "n" ]
-	then
-		exit 1
-	fi
+	printf "${YE}Multiple minishell directories found: $DIRCOUNT${RES}\n"
+	PS3="Choose the correct one: "
+	select CHOICE in "${SHELLDIRS[@]}"
+	do
+		if [ -n "$CHOICE" ]
+		then
+			DIR="$CHOICE"
+			break
+		fi
+	done
+else
+	DIR="${SHELLDIRS[0]}"
 fi
+
+printf "${BL}DEBUG chosen dir: $DIR${RES}\n"
 
 # NORMINETTE --------------------------------------------------------
 
@@ -131,12 +139,12 @@ tput cnorm
 read ARG
 if [ "$ARG" = "y" ]
 then
-	text=">> Norminetting Libft "
+	# text=">> Norminetting Libft "
+	# textanim_s "$text"
+	# norminette -o ${DIR}/libft/* > norm_check.txt
+	text=">> Norminetting "
 	textanim_s "$text"
-	norminette -o libft/* > norm_check.txt
-	text=">> Norminetting source files "
-	textanim_s "$text"
-	norminette -o >> norm_check.txt --use-gitignore
+	norminette -o ${DIR}/* >> norm_check.txt
 	grep  ": Error" norm_check.txt > norm_grep.txt
 	if [ -s norm_grep.txt ]
 	then
@@ -195,7 +203,7 @@ then
 	for file in "${INPUTS[@]}"; do
 		out="${file%%.*}"
 		log="${LEAKSDIR}leaks_${out}.txt"
-		valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --trace-children=yes --track-fds=yes --suppressions=${TESTDIR}minishell.supp ./minishell 2> "$log"  1> /dev/null < "${TESTDIR}${file}"
+		valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --trace-children=yes --track-fds=yes --suppressions=${TESTDIR}minishell.supp ${DIR}./minishell 2> "$log"  1> /dev/null < "${TESTDIR}${file}"
 		text=">> Checking leaks with ${file} "
 		textanim_s "$text"
 		ZEROLEAKS=$(grep -ic "lost: 0" "$log")
@@ -203,7 +211,8 @@ then
 #		ZEROFDOPEN=$(grep -ic "0 open ")
 		TOTALLEAKS=$(grep -ic "lost: " "$log")
 		TOTALREACH=$(grep -ic "reachable: " "$log")
-		if [[ "$TOTALLEAKS" - "$ZEROLEAKS" -eq 0 && "$TOTALREACH" - "$ZEROREACH" -eq 0 ]]; then
+		if [[ "$TOTALLEAKS" - "$ZEROLEAKS" -eq 0 && "$TOTALREACH" - "$ZEROREACH" -eq 0 ]]
+		then
 			results+=("$out: OK")
 		else
 			results+=("$out: LEAKS (see logs: $log)")

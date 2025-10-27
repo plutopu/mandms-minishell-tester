@@ -26,12 +26,10 @@ echo RST >> outfile1 > outfile2
 cat >> forbidden_file > forbidden_file < forbidden_file
 < valid_infile_1 cat | grep dream > forbidden_file
 < valid_infile_2 cat | grep dream >> forbidden_file
-
 echo ABC > outfile1 | echo DEF >> outfile2
 echo GHI >> outfile1 | echo KLM > outfile2
 < valid_infile_1 cat | echo UVW > outfile1 | echo XYZ >> outfile2
 < valid_infile_1 cat > outfile1 | echo ABC >> outfile1 | echo DEF > outfile2
-
 < valid_infile_1 cat >> forbidden_file | wc -l > outfile1
 < valid_infile_1 cat >> outfile2 | wc -l > outfile1
 < valid_infile_2 cat > forbidden_file | wc -l >> outfile1

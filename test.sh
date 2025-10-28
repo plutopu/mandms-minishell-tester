@@ -202,8 +202,13 @@ read ARG
 if [ "$ARG" = "y" ]
 then
 	printf "Readline leaks will be surpressed\n"
+	touch ${DIR}/forbidden_file
+	chmod 000 ${DIR}/forbidden_file
+	touch valid_infile_1
+	touch valid_infile_2
 	results=()
-	for file in "${INPUTS[@]}"; do
+	for file in "${INPUTS[@]}"
+	do
 		out="${file%%.*}"
 		log="${LEAKSDIR}leaks_${out}.txt"
 		valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --trace-children=yes --track-fds=yes --suppressions=${TESTDIR}minishell.supp ${DIR}/./minishell 2> "$log"  1> /dev/null < "${TESTDIR}${file}"
@@ -220,14 +225,17 @@ then
 			results+=("$out: OK")
 		else
 			results+=("$out: LEAKS (see logs: $log)")
-			FDOPENCOUNT=$(grep -ic "Open file descriptor " "$log")
-			if [[ ! "$FDOPENCOUNT" -eq 0 ]]
-			then
-				printf "${RE}File descriptors: ${RES}\n"
-				grep "Open file descriptor " "$log"
-				grep "FILE DESCRIPTORS" "$log"
+			line=$(grep 'FILE DESCRIPTORS:' $log)
+			awk '{for(i=1;i<=NF;i++) if($(i+1)=="open") open=$(i); if($(i+1)=="std)") std=$(i)} END{if(open>=std) print "No suspicious file descriptors"; else print "Suspicious file descriptors"}' <<< "$line"
 
-			fi
+			# FDOPENCOUNT=$(grep -ic "Open file descriptor " "$log")
+			# if [[ ! "$FDOPENCOUNT" -eq 0 ]]
+			# then
+			# 	printf "${RE}File descriptors: ${RES}\n"
+			# 	grep "Open file descriptor " "$log"
+			# 	grep "FILE DESCRIPTORS" "$log"
+
+			# fi
 		fi
 	done
 	echo
@@ -250,12 +258,14 @@ echo
 text=" CLEAN UP  "
 textanim "$text"
 tput cnorm
-printf "${GR}\nClean up? This will remove test logs, executables and object files. [y/n]${RES} "
+printf "${GR}\nClean up? This will remove test logs and test files, and perform make fclean on ${DIR}. [y/n]${RES} "
 read ARG
 if [ "$ARG" = "y" ]; then
 	echo
 	echo rm -fr ${LEAKSDIR}*
 	rm -fr ${LEAKSDIR}*
+	echo rm -f forbidden_file valid_infile_1 valid_infile_2
+	rm -f forbidden_file valid_infile_1 valid_infile_2
 	cd ${DIR}
 	echo make fclean
 	make fclean
